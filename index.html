@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Scrabble Scorer</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f5f3ef;
+      color: #2C2C2A;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 3rem 1.5rem;
+    }
+
+    header { text-align: center; margin-bottom: 2.5rem; }
+    header h1 { font-size: 2rem; font-weight: 500; letter-spacing: -0.5px; color: #2C2C2A; }
+    header p { margin-top: 0.4rem; font-size: 0.95rem; color: #888780; }
+
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      border: 0.5px solid #d3d1c7;
+      padding: 2rem;
+      width: 100%;
+      max-width: 640px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      font-size: 1.1rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 10px 14px;
+      border: 0.5px solid #d3d1c7;
+      border-radius: 8px;
+      background: #f5f3ef;
+      color: #2C2C2A;
+      outline: none;
+      font-family: inherit;
+      transition: border-color 0.15s;
+    }
+
+    input[type="text"]:focus { border-color: #888780; }
+    input[type="text"]::placeholder { color: #b4b2a9; letter-spacing: 0; }
+
+    .hint { font-size: 0.78rem; color: #b4b2a9; margin: 4px 0 0; }
+
+    .tile-section { display: none; margin-top: 1.5rem; }
+    .tile-hint { font-size: 0.78rem; color: #b4b2a9; margin-bottom: 10px; }
+    .tile-row { display: flex; flex-wrap: wrap; gap: 8px; }
+
+    .tile { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+
+    .tile-box {
+      width: 52px; height: 56px;
+      border: 0.5px solid #d3d1c7;
+      border-radius: 8px;
+      background: #fff;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      font-weight: 500; font-size: 1.2rem; color: #2C2C2A;
+      cursor: pointer; user-select: none; position: relative; transition: transform 0.1s;
+    }
+
+    .tile-box:active { transform: scale(0.94); }
+    .tile-pts { font-size: 10px; font-weight: 400; }
+    .tile-badge { font-size: 9px; font-weight: 500; position: absolute; top: 3px; right: 4px; }
+    .tile-label { font-size: 11px; color: #b4b2a9; }
+
+    .word-mult-row {
+      display: none; align-items: center; gap: 8px;
+      margin-top: 1.5rem; flex-wrap: wrap;
+    }
+
+    .word-mult-label { font-size: 0.85rem; color: #888780; margin-right: 2px; }
+
+    .wm-btn {
+      padding: 7px 16px; font-size: 0.82rem; border-radius: 8px;
+      cursor: pointer; font-weight: 400; border: 1.5px solid transparent;
+      font-family: inherit; transition: all 0.15s;
+    }
+
+    .score-section {
+      display: none; align-items: center; gap: 16px;
+      margin-top: 1.75rem; flex-wrap: wrap;
+    }
+
+    .score-card { background: #f5f3ef; border-radius: 8px; padding: 0.75rem 1.25rem; min-width: 90px; }
+    .score-label { font-size: 0.75rem; color: #888780; margin-bottom: 2px; }
+    .score-val { font-size: 1.6rem; font-weight: 500; color: #2C2C2A; }
+    .score-card.final { background: #FAEEDA; }
+    .score-card.final .score-label { color: #854F0B; }
+    .score-card.final .score-val { color: #633806; }
+    .sep { font-size: 1.2rem; color: #b4b2a9; }
+
+    .action-row {
+      display: none; gap: 8px;
+      margin-top: 1.5rem;
+      padding-top: 1.25rem;
+      border-top: 0.5px solid #d3d1c7;
+      flex-wrap: wrap;
+    }
+
+    .action-btn {
+      padding: 7px 16px; font-size: 0.82rem; border-radius: 8px;
+      cursor: pointer; font-weight: 400;
+      border: 0.5px solid #d3d1c7;
+      background: #f5f3ef; color: #888780;
+      font-family: inherit; transition: all 0.15s;
+    }
+
+    .action-btn:hover { color: #2C2C2A; border-color: #888780; }
+
+    footer { margin-top: 2.5rem; font-size: 0.78rem; color: #b4b2a9; text-align: center; }
+
+    @media (prefers-color-scheme: dark) {
+      body { background: #1a1a18; color: #e8e6e0; }
+      .card { background: #242422; border-color: #3a3a38; }
+      header h1 { color: #e8e6e0; }
+      input[type="text"] { background: #1a1a18; border-color: #3a3a38; color: #e8e6e0; }
+      input[type="text"]:focus { border-color: #888780; }
+      .tile-box { background: #242422; border-color: #3a3a38; color: #e8e6e0; }
+      .score-card { background: #1a1a18; }
+      .score-val { color: #e8e6e0; }
+      .action-row { border-top-color: #3a3a38; }
+      .action-btn { background: #1a1a18; border-color: #3a3a38; }
+      .action-btn:hover { color: #e8e6e0; border-color: #888780; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Scrabble score calculator</h1>
+    <p>Type a word, set your multipliers, and see your score.</p>
+  </header>
+
+  <div class="card">
+    <input type="text" id="wordInput" placeholder="Type your word..." maxlength="15" oninput="buildTiles()" />
+    <p class="hint">Use _ for a blank tile (scores 0).</p>
+
+    <div class="tile-section" id="tileSection">
+      <p class="tile-hint">Click a tile to cycle: normal → double letter (DL) → triple letter (TL).</p>
+      <div class="tile-row" id="tileRow"></div>
+    </div>
+
+    <div class="word-mult-row" id="wordMultRow">
+      <span class="word-mult-label">Word multiplier:</span>
+      <button class="wm-btn" id="btnNormal" onclick="setWordMult(1)">Normal</button>
+      <button class="wm-btn" id="btnDW" onclick="setWordMult(2)">Double word</button>
+      <button class="wm-btn" id="btnTW" onclick="setWordMult(3)">Triple word</button>
+    </div>
+
+    <div class="score-section" id="scoreSection">
+      <div class="score-card">
+        <p class="score-label">Base score</p>
+        <p class="score-val" id="baseScore">0</p>
+      </div>
+      <div class="sep">×</div>
+      <div class="score-card">
+        <p class="score-label">Word multiplier</p>
+        <p class="score-val" id="multDisplay">1×</p>
+      </div>
+      <div class="sep">=</div>
+      <div class="score-card final">
+        <p class="score-label">Final score</p>
+        <p class="score-val" id="finalScore">0</p>
+      </div>
+    </div>
+
+    <div class="action-row" id="actionRow">
+      <button class="action-btn" onclick="clearMultipliers()">Clear multipliers</button>
+      <button class="action-btn" onclick="clearWord()">Clear word</button>
+    </div>
+  </div>
+
+  <footer>For people who like scrabble and hate maths</footer>
+
+  <script>
+    const VALS = {A:1,B:3,C:3,D:2,E:1,F:4,G:2,H:4,I:1,J:8,K:5,L:1,M:3,N:1,O:1,P:3,Q:10,R:1,S:1,T:1,U:1,V:4,W:4,X:8,Y:4,Z:10};
+    let tileMults = [];
+    let wordMult = 1;
+
+    const BTN_STYLES = {
+      inactive: 'background:#f0ede8;border:1.5px solid transparent;color:#888;font-weight:400;',
+      normal:   'background:#e8e6e0;border:2px solid #888;color:#2C2C2A;font-weight:500;',
+      dw:       'background:#B5D4F4;border:2px solid #378ADD;color:#0C447C;font-weight:500;',
+      tw:       'background:#9FE1CB;border:2px solid #1D9E75;color:#085041;font-weight:500;'
+    };
+
+    function updateWordButtons() {
+      document.getElementById('btnNormal').style.cssText = wordMult === 1 ? BTN_STYLES.normal : BTN_STYLES.inactive;
+      document.getElementById('btnDW').style.cssText     = wordMult === 2 ? BTN_STYLES.dw     : BTN_STYLES.inactive;
+      document.getElementById('btnTW').style.cssText     = wordMult === 3 ? BTN_STYLES.tw     : BTN_STYLES.inactive;
+    }
+
+    function applyTileState(i, mult) {
+      const box = document.getElementById('box' + i);
+      const badge = document.getElementById('badge' + i);
+      const letterEl = box.querySelector('.tile-letter');
+      const ptsEl = box.querySelector('.tile-pts');
+
+      if (mult === 2) {
+        box.style.background = '#B5D4F4';
+        box.style.border = '1.5px solid #378ADD';
+        badge.textContent = 'DL'; badge.style.color = '#0C447C';
+        letterEl.style.color = '#0C447C'; ptsEl.style.color = '#185FA5';
+      } else if (mult === 3) {
+        box.style.background = '#9FE1CB';
+        box.style.border = '1.5px solid #1D9E75';
+        badge.textContent = 'TL'; badge.style.color = '#085041';
+        letterEl.style.color = '#085041'; ptsEl.style.color = '#0F6E56';
+      } else {
+        box.style.background = '';
+        box.style.border = '0.5px solid #d3d1c7';
+        badge.textContent = ''; badge.style.color = '';
+        letterEl.style.color = ''; ptsEl.style.color = '';
+      }
+    }
+
+    function buildTiles() {
+      const raw = document.getElementById('wordInput').value.toUpperCase();
+      const row = document.getElementById('tileRow');
+      row.innerHTML = '';
+      tileMults = [];
+      const show = raw.length > 0;
+      document.getElementById('tileSection').style.display  = show ? 'block' : 'none';
+      document.getElementById('wordMultRow').style.display  = show ? 'flex'  : 'none';
+      document.getElementById('scoreSection').style.display = show ? 'flex'  : 'none';
+      document.getElementById('actionRow').style.display    = show ? 'flex'  : 'none';
+      if (!show) return;
+
+      raw.split('').forEach((ch, i) => {
+        const isBlank = ch === '_';
+        const letter = isBlank ? '?' : ch;
+        const val = isBlank ? 0 : (VALS[ch] || 0);
+        tileMults.push(1);
+        const div = document.createElement('div');
+        div.className = 'tile';
+        div.innerHTML = `
+          <div class="tile-box" id="box${i}" onclick="cycleTile(${i}, ${isBlank})" style="cursor:${isBlank ? 'default' : 'pointer'}">
+            <span class="tile-badge" id="badge${i}"></span>
+            <span class="tile-letter">${letter}</span>
+            <span class="tile-pts">${val}</span>
+          </div>
+          <span class="tile-label">${isBlank ? 'blank' : ''}</span>`;
+        row.appendChild(div);
+      });
+
+      wordMult = 1;
+      updateWordButtons();
+      recalc();
+    }
+
+    function cycleTile(i, isBlank) {
+      if (isBlank) return;
+      tileMults[i] = tileMults[i] === 1 ? 2 : tileMults[i] === 2 ? 3 : 1;
+      applyTileState(i, tileMults[i]);
+      recalc();
+    }
+
+    function setWordMult(n) {
+      wordMult = (wordMult === n && n !== 1) ? 1 : n;
+      updateWordButtons();
+      recalc();
+    }
+
+    function clearMultipliers() {
+      tileMults = tileMults.map(() => 1);
+      tileMults.forEach((_, i) => applyTileState(i, 1));
+      wordMult = 1;
+      updateWordButtons();
+      recalc();
+    }
+
+    function clearWord() {
+      document.getElementById('wordInput').value = '';
+      document.getElementById('tileRow').innerHTML = '';
+      tileMults = [];
+      wordMult = 1;
+      document.getElementById('tileSection').style.display  = 'none';
+      document.getElementById('wordMultRow').style.display  = 'none';
+      document.getElementById('scoreSection').style.display = 'none';
+      document.getElementById('actionRow').style.display    = 'none';
+    }
+
+    function recalc() {
+      const raw = document.getElementById('wordInput').value.toUpperCase();
+      if (!raw) return;
+      let base = 0;
+      raw.split('').forEach((ch, i) => {
+        if (ch === '_') return;
+        base += (VALS[ch] || 0) * (tileMults[i] || 1);
+      });
+      document.getElementById('baseScore').textContent = base;
+      document.getElementById('multDisplay').textContent = wordMult + '×';
+      document.getElementById('finalScore').textContent = base * wordMult;
+    }
+  </script>
+
+</body>
+</html>
