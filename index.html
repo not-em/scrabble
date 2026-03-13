@@ -7,10 +7,48 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+    :root {
+      --bg-page:       #f5f3ef;
+      --bg-card:       #ffffff;
+      --bg-input:      #f5f3ef;
+      --bg-score:      #f5f3ef;
+      --bg-action-btn: #f5f3ef;
+      --color-text:    #2C2C2A;
+      --color-muted:   #888780;
+      --color-hint:    #b4b2a9;
+      --color-border:  #d3d1c7;
+      --color-border-strong: #888780;
+      --tile-bg:       #ffffff;
+      --tile-border:   #d3d1c7;
+      --btn-inactive-bg: #f0ede8;
+      --btn-normal-bg:   #e8e6e0;
+      --btn-normal-text: #2C2C2A;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg-page:       #1a1a18;
+        --bg-card:       #242422;
+        --bg-input:      #1a1a18;
+        --bg-score:      #1a1a18;
+        --bg-action-btn: #1a1a18;
+        --color-text:    #e8e6e0;
+        --color-muted:   #888780;
+        --color-hint:    #5f5e5a;
+        --color-border:  #3a3a38;
+        --color-border-strong: #888780;
+        --tile-bg:       #242422;
+        --tile-border:   #3a3a38;
+        --btn-inactive-bg: #2a2a28;
+        --btn-normal-bg:   #323230;
+        --btn-normal-text: #e8e6e0;
+      }
+    }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #f5f3ef;
-      color: #2C2C2A;
+      background: var(--bg-page);
+      color: var(--color-text);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
@@ -19,13 +57,13 @@
     }
 
     header { text-align: center; margin-bottom: 2.5rem; }
-    header h1 { font-size: 2rem; font-weight: 500; letter-spacing: -0.5px; color: #2C2C2A; }
-    header p { margin-top: 0.4rem; font-size: 0.95rem; color: #888780; }
+    header h1 { font-size: 2rem; font-weight: 500; letter-spacing: -0.5px; color: var(--color-text); }
+    header p { margin-top: 0.4rem; font-size: 0.95rem; color: var(--color-muted); }
 
     .card {
-      background: #fff;
+      background: var(--bg-card);
       border-radius: 16px;
-      border: 0.5px solid #d3d1c7;
+      border: 0.5px solid var(--color-border);
       padding: 2rem;
       width: 100%;
       max-width: 640px;
@@ -37,47 +75,47 @@
       letter-spacing: 2px;
       text-transform: uppercase;
       padding: 10px 14px;
-      border: 0.5px solid #d3d1c7;
+      border: 0.5px solid var(--color-border);
       border-radius: 8px;
-      background: #f5f3ef;
-      color: #2C2C2A;
+      background: var(--bg-input);
+      color: var(--color-text);
       outline: none;
       font-family: inherit;
       transition: border-color 0.15s;
     }
 
-    input[type="text"]:focus { border-color: #888780; }
-    input[type="text"]::placeholder { color: #b4b2a9; letter-spacing: 0; }
+    input[type="text"]:focus { border-color: var(--color-border-strong); }
+    input[type="text"]::placeholder { color: var(--color-hint); letter-spacing: 0; }
 
-    .hint { font-size: 0.78rem; color: #b4b2a9; margin: 4px 0 0; }
+    .hint { font-size: 0.78rem; color: var(--color-hint); margin: 4px 0 0; }
 
     .tile-section { display: none; margin-top: 1.5rem; }
-    .tile-hint { font-size: 0.78rem; color: #b4b2a9; margin-bottom: 10px; }
+    .tile-hint { font-size: 0.78rem; color: var(--color-hint); margin-bottom: 10px; }
     .tile-row { display: flex; flex-wrap: wrap; gap: 8px; }
 
     .tile { display: flex; flex-direction: column; align-items: center; gap: 4px; }
 
     .tile-box {
       width: 52px; height: 56px;
-      border: 0.5px solid #d3d1c7;
+      border: 0.5px solid var(--tile-border);
       border-radius: 8px;
-      background: #fff;
+      background: var(--tile-bg);
       display: flex; flex-direction: column; align-items: center; justify-content: center;
-      font-weight: 500; font-size: 1.2rem; color: #2C2C2A;
+      font-weight: 500; font-size: 1.2rem; color: var(--color-text);
       cursor: pointer; user-select: none; position: relative; transition: transform 0.1s;
     }
 
     .tile-box:active { transform: scale(0.94); }
-    .tile-pts { font-size: 10px; font-weight: 400; }
+    .tile-pts { font-size: 10px; font-weight: 400; color: var(--color-muted); }
     .tile-badge { font-size: 9px; font-weight: 500; position: absolute; top: 3px; right: 4px; }
-    .tile-label { font-size: 11px; color: #b4b2a9; }
+    .tile-label { font-size: 11px; color: var(--color-hint); }
 
     .word-mult-row {
       display: none; align-items: center; gap: 8px;
       margin-top: 1.5rem; flex-wrap: wrap;
     }
 
-    .word-mult-label { font-size: 0.85rem; color: #888780; margin-right: 2px; }
+    .word-mult-label { font-size: 0.85rem; color: var(--color-muted); margin-right: 2px; }
 
     .wm-btn {
       padding: 7px 16px; font-size: 0.82rem; border-radius: 8px;
@@ -90,54 +128,40 @@
       margin-top: 1.75rem; flex-wrap: wrap;
     }
 
-    .score-card { background: #f5f3ef; border-radius: 8px; padding: 0.75rem 1.25rem; min-width: 90px; }
-    .score-label { font-size: 0.75rem; color: #888780; margin-bottom: 2px; }
-    .score-val { font-size: 1.6rem; font-weight: 500; color: #2C2C2A; }
+    .score-card { background: var(--bg-score); border-radius: 8px; padding: 0.75rem 1.25rem; min-width: 90px; }
+    .score-label { font-size: 0.75rem; color: var(--color-muted); margin-bottom: 2px; }
+    .score-val { font-size: 1.6rem; font-weight: 500; color: var(--color-text); }
     .score-card.final { background: #FAEEDA; }
     .score-card.final .score-label { color: #854F0B; }
     .score-card.final .score-val { color: #633806; }
-    .sep { font-size: 1.2rem; color: #b4b2a9; }
+    .sep { font-size: 1.2rem; color: var(--color-hint); }
 
     .action-row {
       display: none; gap: 8px;
       margin-top: 1.5rem;
       padding-top: 1.25rem;
-      border-top: 0.5px solid #d3d1c7;
+      border-top: 0.5px solid var(--color-border);
       flex-wrap: wrap;
     }
 
     .action-btn {
       padding: 7px 16px; font-size: 0.82rem; border-radius: 8px;
       cursor: pointer; font-weight: 400;
-      border: 0.5px solid #d3d1c7;
-      background: #f5f3ef; color: #888780;
+      border: 0.5px solid var(--color-border);
+      background: var(--bg-action-btn); color: var(--color-muted);
       font-family: inherit; transition: all 0.15s;
     }
 
-    .action-btn:hover { color: #2C2C2A; border-color: #888780; }
+    .action-btn:hover { color: var(--color-text); border-color: var(--color-border-strong); }
 
-    footer { margin-top: 2.5rem; font-size: 0.78rem; color: #b4b2a9; text-align: center; }
-
-    @media (prefers-color-scheme: dark) {
-      body { background: #1a1a18; color: #e8e6e0; }
-      .card { background: #242422; border-color: #3a3a38; }
-      header h1 { color: #e8e6e0; }
-      input[type="text"] { background: #1a1a18; border-color: #3a3a38; color: #e8e6e0; }
-      input[type="text"]:focus { border-color: #888780; }
-      .tile-box { background: #242422; border-color: #3a3a38; color: #e8e6e0; }
-      .score-card { background: #1a1a18; }
-      .score-val { color: #e8e6e0; }
-      .action-row { border-top-color: #3a3a38; }
-      .action-btn { background: #1a1a18; border-color: #3a3a38; }
-      .action-btn:hover { color: #e8e6e0; border-color: #888780; }
-    }
+    footer { margin-top: 2.5rem; font-size: 0.78rem; color: var(--color-hint); text-align: center; }
   </style>
 </head>
 <body>
 
   <header>
-    <h1>Scrabble score calculator</h1>
-    <p>Type a word, set your multipliers, and see your score.</p>
+    <h1>Scrabble scorer</h1>
+    <p>Type a word, set multipliers, and see your score.</p>
   </header>
 
   <div class="card">
@@ -186,17 +210,22 @@
     let tileMults = [];
     let wordMult = 1;
 
-    const BTN_STYLES = {
-      inactive: 'background:#f0ede8;border:1.5px solid transparent;color:#888;font-weight:400;',
-      normal:   'background:#e8e6e0;border:2px solid #888;color:#2C2C2A;font-weight:500;',
-      dw:       'background:#B5D4F4;border:2px solid #378ADD;color:#0C447C;font-weight:500;',
-      tw:       'background:#9FE1CB;border:2px solid #1D9E75;color:#085041;font-weight:500;'
-    };
+    const isDark = () => window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    function btnStyles() {
+      return {
+        inactive: `background:${isDark() ? '#2a2a28' : '#f0ede8'};border:1.5px solid transparent;color:#888;font-weight:400;`,
+        normal:   `background:${isDark() ? '#323230' : '#e8e6e0'};border:2px solid #888;color:${isDark() ? '#e8e6e0' : '#2C2C2A'};font-weight:500;`,
+        dw:       'background:#B5D4F4;border:2px solid #378ADD;color:#0C447C;font-weight:500;',
+        tw:       'background:#9FE1CB;border:2px solid #1D9E75;color:#085041;font-weight:500;'
+      };
+    }
 
     function updateWordButtons() {
-      document.getElementById('btnNormal').style.cssText = wordMult === 1 ? BTN_STYLES.normal : BTN_STYLES.inactive;
-      document.getElementById('btnDW').style.cssText     = wordMult === 2 ? BTN_STYLES.dw     : BTN_STYLES.inactive;
-      document.getElementById('btnTW').style.cssText     = wordMult === 3 ? BTN_STYLES.tw     : BTN_STYLES.inactive;
+      const s = btnStyles();
+      document.getElementById('btnNormal').style.cssText = wordMult === 1 ? s.normal : s.inactive;
+      document.getElementById('btnDW').style.cssText     = wordMult === 2 ? s.dw     : s.inactive;
+      document.getElementById('btnTW').style.cssText     = wordMult === 3 ? s.tw     : s.inactive;
     }
 
     function applyTileState(i, mult) {
@@ -217,7 +246,7 @@
         letterEl.style.color = '#085041'; ptsEl.style.color = '#0F6E56';
       } else {
         box.style.background = '';
-        box.style.border = '0.5px solid #d3d1c7';
+        box.style.border = '';
         badge.textContent = ''; badge.style.color = '';
         letterEl.style.color = ''; ptsEl.style.color = '';
       }
